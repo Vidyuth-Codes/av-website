@@ -143,3 +143,13 @@ footer { align-items: flex-start; padding-top: 3.2rem; padding-bottom: 3.2rem; }
 
 /* Keep all cards fully visible; carousel movement is triggered only by click. */
 .project-grid:has(.project:hover) .project { filter: none; opacity: 1; }
+
+/* Hover must not change the carousel position; cards move only after a click. */
+@media (min-width: 701px) {
+  .project-grid:not(.project-one):not(.project-two):not(.project-three) .p-one:hover { transform: translateX(-50%) translateZ(82px) rotateY(0deg); }
+  .project-grid:not(.project-one):not(.project-two):not(.project-three) .p-two:hover { transform: translateX(-138%) translateZ(-42px) rotateY(38deg); }
+  .project-grid:not(.project-one):not(.project-two):not(.project-three) .p-three:hover { transform: translateX(38%) translateZ(-42px) rotateY(-38deg); }
+  .project-grid.project-one .p-one:hover, .project-grid.project-two .p-two:hover, .project-grid.project-three .p-three:hover { transform: translateX(-50%) translateZ(90px) rotateY(0deg) translateY(-8px); }
+  .project-grid.project-one .p-two:hover, .project-grid.project-two .p-three:hover, .project-grid.project-three .p-one:hover { transform: translateX(-138%) translateZ(-42px) rotateY(38deg); }
+  .project-grid.project-one .p-three:hover, .project-grid.project-two .p-one:hover, .project-grid.project-three .p-two:hover { transform: translateX(38%) translateZ(-42px) rotateY(-38deg); }
+}
