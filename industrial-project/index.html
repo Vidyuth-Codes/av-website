@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#12372a" />
+    <title>Pathshala AI - Offline Tutor</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header>
+        <div>
+          <p class="eyebrow">RURAL LEARNING, ANYWHERE</p>
+          <h1>Pathshala <span>AI</span></h1>
+        </div>
+        <div class="connection" id="connectionStatus" aria-live="polite">Checking connection...</div>
+      </header>
+
+      <section class="hero card">
+        <div>
+          <p class="eyebrow">WELCOME BACK</p>
+          <h2 id="studentGreeting">Hello, Learner</h2>
+          <p>Learn even without the internet. Your work stays safely on this device and syncs when a connection returns.</p>
+        </div>
+        <div class="streak"><strong id="completedCount">0</strong><span>lessons<br />completed</span></div>
+      </section>
+
+      <section class="grid">
+        <article class="card tutor-card">
+          <p class="eyebrow">YOUR AI TUTOR</p>
+          <h2>Ask a question</h2>
+          <div class="chat" id="chat" aria-live="polite">
+            <p class="message tutor">Namaste! Choose a topic or type your question. I can help with Maths, Science and English.</p>
+          </div>
+          <form id="questionForm">
+            <label class="sr-only" for="question">Your question</label>
+            <input id="question" autocomplete="off" placeholder="e.g. Explain photosynthesis" required />
+            <button type="submit">Ask</button>
+          </form>
+          <div class="topic-pills">
+            <button class="pill" data-question="Explain fractions with an example">Maths</button>
+            <button class="pill" data-question="Explain photosynthesis simply">Science</button>
+            <button class="pill" data-question="Help me make a sentence with beautiful">English</button>
+          </div>
+        </article>
+
+        <aside class="card progress-card">
+          <p class="eyebrow">MY PROGRESS</p>
+          <h2>Keep going</h2>
+          <div class="progress-ring"><span id="progressText">0%</span></div>
+          <p id="progressNote">Complete a quiz to begin tracking progress.</p>
+          <button class="secondary" id="resetProgress">Reset local progress</button>
+        </aside>
+      </section>
+
+      <section class="card quiz-card">
+        <div class="section-heading">
+          <div><p class="eyebrow">PRACTICE MODE</p><h2>Quick science quiz</h2></div>
+          <span id="quizStatus">3 questions</span>
+        </div>
+        <div id="quiz"></div>
+        <button id="submitQuiz">Check answers</button>
+        <p class="feedback" id="feedback" aria-live="polite"></p>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

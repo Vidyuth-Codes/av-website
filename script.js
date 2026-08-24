@@ -24,6 +24,7 @@ approachSteps?.addEventListener('mouseleave', clearActiveStep);
 const projectGrid = document.querySelector('.project-grid');
 projectGrid?.querySelectorAll('.project').forEach((project) => {
   const selectProject = () => {
+    if (window.matchMedia('(max-width: 700px)').matches) return;
     projectGrid.classList.remove('project-one', 'project-two', 'project-three');
     projectGrid.classList.add(`project-${project.dataset.project}`);
   };

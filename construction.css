@@ -141,6 +141,15 @@ footer { align-items: flex-start; padding-top: 3.2rem; padding-bottom: 3.2rem; }
 .work .mark-word { display: inline-block; margin-left: .08em; padding: .07em .18em .12em; background: #e4b637; color: #20211d; font-style: italic; line-height: .8; box-shadow: .09em .09em 0 #e96248; transform: rotate(-2deg); }
 @media (max-width: 700px) { .work .section-heading h2 { white-space: normal; } }
 
+/* Mobile: a quiet, linear project gallery with no carousel interaction. */
+@media (max-width: 700px) {
+  .project-grid { display: flex !important; flex-direction: column; gap: 3.5rem; height: auto !important; padding: 0 6vw !important; perspective: none; transform: none; }
+  .project-grid .project, .project-grid .p-one, .project-grid .p-two, .project-grid .p-three { position: relative !important; inset: auto !important; left: auto !important; right: auto !important; top: auto !important; width: 100% !important; opacity: 1 !important; filter: none !important; transform: none !important; transition: none !important; pointer-events: none; }
+  .project-grid .project .project-image, .project-grid .project-tall .project-image { height: 115vw !important; min-height: 0; margin-bottom: 1.25rem; box-shadow: none; }
+  .project-grid .project-image img { opacity: 1 !important; filter: none; transform: none !important; transition: none !important; }
+  .project-grid .project-image strong { display: block; }
+}
+
 /* Keep all cards fully visible; carousel movement is triggered only by click. */
 .project-grid:has(.project:hover) .project { filter: none; opacity: 1; }
 
