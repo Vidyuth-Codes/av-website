@@ -22,11 +22,35 @@ document.querySelectorAll('.approach-steps li').forEach((step) => {
 approachSteps?.addEventListener('mouseleave', clearActiveStep);
 
 const projectGrid = document.querySelector('.project-grid');
-projectGrid?.querySelectorAll('.project').forEach((project) => {
+const projects = projectGrid ? [...projectGrid.querySelectorAll('.project')] : [];
+let activeProject = 0;
+let projectTimer;
+const slideCurrent = document.querySelector('.slide-current');
+
+const renderProjectCarousel = (direction = 1) => {
+  if (!projectGrid || window.matchMedia('(max-width: 700px)').matches) return;
+  projectGrid.dataset.direction = direction > 0 ? 'next' : 'previous';
+  const total = projects.length;
+  projects.forEach((project, index) => {
+    project.classList.toggle('is-selected', index === activeProject);
+  });
+  slideCurrent.textContent = String(activeProject + 1).padStart(2, '0');
+};
+
+const moveProjectSlide = (direction) => {
+  activeProject = (activeProject + direction + projects.length) % projects.length;
+  renderProjectCarousel(direction);
+  clearInterval(projectTimer);
+  projectTimer = setInterval(() => moveProjectSlide(1), 5000);
+};
+
+projects.forEach((project) => {
   const selectProject = () => {
     if (window.matchMedia('(max-width: 700px)').matches) return;
-    projectGrid.classList.remove('project-one', 'project-two', 'project-three');
-    projectGrid.classList.add(`project-${project.dataset.project}`);
+    activeProject = Number(project.dataset.project);
+    renderProjectCarousel(1);
+    clearInterval(projectTimer);
+    projectTimer = setInterval(() => moveProjectSlide(1), 5000);
   };
   project.addEventListener('click', (event) => {
     event.preventDefault();
@@ -34,3 +58,13 @@ projectGrid?.querySelectorAll('.project').forEach((project) => {
   });
   project.addEventListener('focus', selectProject);
 });
+
+document.querySelectorAll('.slide-arrow').forEach((button) => {
+  button.addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 700px)').matches) return;
+    moveProjectSlide(button.classList.contains('slide-next') ? 1 : -1);
+  });
+});
+
+renderProjectCarousel();
+if (!window.matchMedia('(max-width: 700px)').matches) projectTimer = setInterval(() => moveProjectSlide(1), 5000);
