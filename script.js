@@ -28,7 +28,7 @@ let projectTimer;
 const slideCurrent = document.querySelector('.slide-current');
 
 const renderProjectCarousel = (direction = 1) => {
-  if (!projectGrid || window.matchMedia('(max-width: 700px)').matches) return;
+  if (!projectGrid) return;
   projectGrid.dataset.direction = direction > 0 ? 'next' : 'previous';
   const total = projects.length;
   projects.forEach((project, index) => {
@@ -46,7 +46,6 @@ const moveProjectSlide = (direction) => {
 
 projects.forEach((project) => {
   const selectProject = () => {
-    if (window.matchMedia('(max-width: 700px)').matches) return;
     activeProject = Number(project.dataset.project);
     renderProjectCarousel(1);
     clearInterval(projectTimer);
@@ -61,10 +60,9 @@ projects.forEach((project) => {
 
 document.querySelectorAll('.slide-arrow').forEach((button) => {
   button.addEventListener('click', () => {
-    if (window.matchMedia('(max-width: 700px)').matches) return;
     moveProjectSlide(button.classList.contains('slide-next') ? 1 : -1);
   });
 });
 
 renderProjectCarousel();
-if (!window.matchMedia('(max-width: 700px)').matches) projectTimer = setInterval(() => moveProjectSlide(1), 5000);
+projectTimer = setInterval(() => moveProjectSlide(1), 5000);
