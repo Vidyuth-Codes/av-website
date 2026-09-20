@@ -22,8 +22,10 @@ em{font-style:italic;font-weight:500}
 .reveal.is-visible{opacity:1;transform:translateY(0)}
 
 /* ---------- header ---------- */
-.site-header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1.6rem 4.5vw;transition:background .35s ease,padding .35s ease,box-shadow .35s ease,backdrop-filter .35s ease}
-.site-header.is-scrolled{padding:1.05rem 4.5vw;background:rgba(247,242,231,.86);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
+.site-header{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1.6rem 4.5vw;transition:padding .35s ease,box-shadow .35s ease}
+.site-header::before{content:'';position:absolute;inset:0;z-index:-1;background:rgba(247,242,231,.86);backdrop-filter:blur(14px);opacity:0;transition:opacity .35s ease}
+.site-header.is-scrolled{padding:1.05rem 4.5vw;box-shadow:0 1px 0 var(--line)}
+.site-header.is-scrolled::before{opacity:1}
 .brand{font:700 1.15rem var(--font-b);letter-spacing:.01em;display:inline-flex;align-items:flex-start;gap:2px}
 .brand sup{font-size:.5em;margin-top:.15em}
 .nav{display:flex;align-items:center;gap:2.4rem}
