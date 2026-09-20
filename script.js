@@ -1,70 +1,59 @@
-const toggle = document.querySelector('.menu-toggle');
-const nav = document.querySelector('.nav');
-toggle?.addEventListener('click', () => {
-  const open = toggle.getAttribute('aria-expanded') === 'true';
-  toggle.setAttribute('aria-expanded', String(!open));
-  nav.classList.toggle('nav-open');
-});
+// Header: solid/blurred background once the page has scrolled.
+const header = document.getElementById('siteHeader');
+const onScroll = () => {
+  if (!header) return;
+  header.classList.toggle('is-scrolled', window.scrollY > 24);
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
 
-const approachSteps = document.querySelector('.approach-steps');
-const clearActiveStep = () => document.querySelectorAll('.approach-steps li').forEach((item) => item.classList.remove('is-active'));
+// Mobile nav: hamburger toggle, backdrop, and closing on link click.
+const menuBtn = document.getElementById('menuBtn');
+const navLinks = document.getElementById('navLinks');
+const navScrim = document.getElementById('navScrim');
 
-document.querySelectorAll('.approach-steps li').forEach((step) => {
-  const activate = () => {
-    clearActiveStep();
-    step.classList.add('is-active');
-  };
-  step.addEventListener('click', activate);
-  step.addEventListener('mouseenter', activate);
-  step.addEventListener('focus', activate);
-});
-
-approachSteps?.addEventListener('mouseleave', clearActiveStep);
-
-const projectGrid = document.querySelector('.project-grid');
-const projects = projectGrid ? [...projectGrid.querySelectorAll('.project')] : [];
-let activeProject = 0;
-let projectTimer;
-const slideCurrent = document.querySelector('.slide-current');
-
-const renderProjectCarousel = (direction = 1) => {
-  if (!projectGrid || window.matchMedia('(max-width: 700px)').matches) return;
-  projectGrid.dataset.direction = direction > 0 ? 'next' : 'previous';
-  const total = projects.length;
-  projects.forEach((project, index) => {
-    project.classList.toggle('is-selected', index === activeProject);
-  });
-  slideCurrent.textContent = String(activeProject + 1).padStart(2, '0');
+const setMenu = (open) => {
+  menuBtn?.classList.toggle('is-open', open);
+  menuBtn?.setAttribute('aria-expanded', String(open));
+  navLinks?.classList.toggle('is-open', open);
+  navScrim?.classList.toggle('is-open', open);
 };
 
-const moveProjectSlide = (direction) => {
-  activeProject = (activeProject + direction + projects.length) % projects.length;
-  renderProjectCarousel(direction);
-  clearInterval(projectTimer);
-  projectTimer = setInterval(() => moveProjectSlide(1), 5000);
-};
-
-projects.forEach((project) => {
-  const selectProject = () => {
-    if (window.matchMedia('(max-width: 700px)').matches) return;
-    activeProject = Number(project.dataset.project);
-    renderProjectCarousel(1);
-    clearInterval(projectTimer);
-    projectTimer = setInterval(() => moveProjectSlide(1), 5000);
-  };
-  project.addEventListener('click', (event) => {
-    event.preventDefault();
-    selectProject();
-  });
-  project.addEventListener('focus', selectProject);
+menuBtn?.addEventListener('click', () => {
+  const open = menuBtn.getAttribute('aria-expanded') === 'true';
+  setMenu(!open);
+});
+navScrim?.addEventListener('click', () => setMenu(false));
+navLinks?.querySelectorAll('a').forEach((link) => {
+  link.addEventListener('click', () => setMenu(false));
 });
 
-document.querySelectorAll('.slide-arrow').forEach((button) => {
-  button.addEventListener('click', () => {
-    if (window.matchMedia('(max-width: 700px)').matches) return;
-    moveProjectSlide(button.classList.contains('slide-next') ? 1 : -1);
+// Scroll-reveal: fade/slide sections and the project cards in as they enter view.
+const revealTargets = document.querySelectorAll('[data-reveal]');
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.18 }
+  );
+  revealTargets.forEach((el) => io.observe(el));
+} else {
+  revealTargets.forEach((el) => el.classList.add('is-visible'));
+}
+
+// Approach steps: click to pin one open (in addition to the CSS hover reveal);
+// everything starts closed.
+const stepper = document.getElementById('stepper');
+stepper?.querySelectorAll('.step').forEach((step) => {
+  step.addEventListener('click', () => {
+    const alreadyActive = step.classList.contains('is-active');
+    stepper.querySelectorAll('.step').forEach((s) => s.classList.remove('is-active'));
+    if (!alreadyActive) step.classList.add('is-active');
   });
 });
-
-renderProjectCarousel();
-if (!window.matchMedia('(max-width: 700px)').matches) projectTimer = setInterval(() => moveProjectSlide(1), 5000);
