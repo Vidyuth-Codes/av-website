@@ -134,8 +134,17 @@ em{font-style:italic;font-weight:500}
 .pill-link{display:inline-flex;align-items:center;gap:.9rem;border:1px solid var(--line-i);border-radius:100px;padding:1.1rem 1.6rem;font-size:.86rem;transition:border-color .3s ease,background .3s ease}
 .pill-link:hover{background:var(--line-i);border-color:transparent}
 .pill-link span{color:color-mix(in srgb, var(--accent) 70%, var(--paper))}
-@media (max-width:900px){.bento{grid-template-columns:1fr 1fr;gap:1rem}.card-big,.card-med,.card-sm{grid-column:span 2}}
-@media (max-width:600px){.bento{grid-template-columns:1fr}.card-big,.card-med,.card-sm{grid-column:span 1}}
+@media (max-width:900px) and (min-width:701px){.bento{grid-template-columns:1fr 1fr;gap:1rem}.card-big,.card-med,.card-sm{grid-column:span 2}}
+.swipe-hint{display:none;align-items:center;gap:.6rem;margin:0 0 1.8rem;color:var(--muted);font:500 .62rem var(--font-m);letter-spacing:.1em}
+.swipe-hint span{display:inline-flex;gap:.35rem;color:color-mix(in srgb, var(--accent) 75%, var(--paper))}
+@media (max-width:700px){
+  .work-head{margin-bottom:1.1rem}
+  .swipe-hint{display:flex}
+  .bento{display:flex;grid-template-columns:none;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;gap:1rem;margin:0 -6vw;padding:.3rem 6vw 1.6rem;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .bento::-webkit-scrollbar{display:none}
+  .card,.card-big,.card-med,.card-sm{grid-column:auto;flex:0 0 82%;scroll-snap-align:center}
+  .card-frame,.card-big .card-frame,.card-sm .card-frame{aspect-ratio:4/4.6}
+}
 
 /* ---------- kitchen feature ---------- */
 .feature{display:grid;grid-template-columns:1.15fr .85fr;background:var(--ink);color:var(--paper)}
