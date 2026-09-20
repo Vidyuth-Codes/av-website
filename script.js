@@ -57,3 +57,137 @@ stepper?.querySelectorAll('.step').forEach((step) => {
     if (!alreadyActive) step.classList.add('is-active');
   });
 });
+
+// 3D render / completed-home comparison slider — draggable via the white
+// handle/frame itself, and kept in sync with the range input underneath.
+const compareFrame = document.querySelector('.compare-frame');
+const compareRange = document.getElementById('compareRange');
+const compareAfter = document.querySelector('.compare-after');
+const compareHandle = document.getElementById('compareHandle');
+
+const setCompare = (value) => {
+  const v = Math.max(0, Math.min(100, value));
+  if (compareAfter) compareAfter.style.clipPath = `inset(0 0 0 ${v}%)`;
+  if (compareHandle) compareHandle.style.left = `${v}%`;
+  if (compareRange) compareRange.value = v;
+};
+
+const compareValueFromEvent = (e) => {
+  const rect = compareFrame.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const x = (clientX - rect.left) / rect.width;
+  return Math.round(Math.max(0, Math.min(1, x)) * 100);
+};
+
+let draggingCompare = false;
+
+const onCompareDragMove = (e) => {
+  if (!draggingCompare) return;
+  setCompare(compareValueFromEvent(e));
+};
+const onCompareDragEnd = () => {
+  draggingCompare = false;
+  window.removeEventListener('pointermove', onCompareDragMove);
+  window.removeEventListener('pointerup', onCompareDragEnd);
+};
+
+compareFrame?.addEventListener('pointerdown', (e) => {
+  draggingCompare = true;
+  setCompare(compareValueFromEvent(e));
+  window.addEventListener('pointermove', onCompareDragMove);
+  window.addEventListener('pointerup', onCompareDragEnd);
+});
+
+compareRange?.addEventListener('input', (e) => setCompare(Number(e.target.value)));
+if (compareRange) setCompare(Number(compareRange.value));
+
+// Selected work: desktop paging via arrow buttons (one card at a time), no
+// free-drag scrolling — the container itself stays non-scrollable on desktop
+// (mobile keeps native touch-swipe instead, see CSS).
+const workBento = document.getElementById('workBento');
+const workPrev = document.getElementById('workPrev');
+const workNext = document.getElementById('workNext');
+
+const workCardStep = () => {
+  const card = workBento?.querySelector('.card');
+  if (!card || !workBento) return 0;
+  const gap = parseFloat(getComputedStyle(workBento).columnGap || getComputedStyle(workBento).gap || '0');
+  return card.getBoundingClientRect().width + gap;
+};
+
+const updateWorkArrows = () => {
+  if (!workBento) return;
+  const max = workBento.scrollWidth - workBento.clientWidth;
+  if (workPrev) workPrev.disabled = workBento.scrollLeft <= 2;
+  if (workNext) workNext.disabled = workBento.scrollLeft >= max - 2;
+};
+
+workPrev?.addEventListener('click', () => {
+  workBento.scrollBy({ left: -workCardStep(), behavior: 'smooth' });
+});
+workNext?.addEventListener('click', () => {
+  workBento.scrollBy({ left: workCardStep(), behavior: 'smooth' });
+});
+workBento?.addEventListener('scroll', updateWorkArrows, { passive: true });
+window.addEventListener('resize', updateWorkArrows);
+updateWorkArrows();
+
+// Enquiry form: build a mailto with the submitted details (no backend required).
+const enquiryForm = document.getElementById('enquiryForm');
+enquiryForm?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const data = new FormData(enquiryForm);
+  const get = (key) => (data.get(key) || '').toString().trim();
+  const lines = [
+    `Name: ${get('name')}`,
+    `Phone: ${get('phone')}`,
+    `Location: ${get('location')}`,
+    `Plot size: ${get('plot')}`,
+    `Project type: ${get('type')}`,
+    `Requirements: ${get('requirements')}`,
+    `Message: ${get('message')}`,
+  ];
+  const subject = encodeURIComponent(`New project enquiry — ${get('name') || 'Website'}`);
+  const body = encodeURIComponent(lines.join('\n'));
+  window.location.href = `mailto:vidyuthrajeshofficial@gmail.com?subject=${subject}&body=${body}`;
+});
+
+// Lightbox for the "concept visualisations" thumbnail strip.
+const conceptThumbs = Array.from(document.querySelectorAll('#conceptThumbs .concept-thumb'));
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxClose = document.getElementById('lightboxClose');
+const lightboxPrev = document.getElementById('lightboxPrev');
+const lightboxNext = document.getElementById('lightboxNext');
+let lightboxIndex = 0;
+
+const showLightboxImage = (index) => {
+  if (!conceptThumbs.length) return;
+  lightboxIndex = (index + conceptThumbs.length) % conceptThumbs.length;
+  const img = conceptThumbs[lightboxIndex].querySelector('img');
+  lightboxImg.src = img.src;
+  lightboxImg.alt = img.alt;
+};
+
+const openLightbox = (index) => {
+  showLightboxImage(index);
+  lightbox?.classList.add('is-open');
+};
+
+const closeLightbox = () => lightbox?.classList.remove('is-open');
+
+conceptThumbs.forEach((thumb, index) => {
+  thumb.addEventListener('click', () => openLightbox(index));
+});
+lightboxClose?.addEventListener('click', closeLightbox);
+lightboxPrev?.addEventListener('click', () => showLightboxImage(lightboxIndex - 1));
+lightboxNext?.addEventListener('click', () => showLightboxImage(lightboxIndex + 1));
+lightbox?.addEventListener('click', (e) => {
+  if (e.target === lightbox) closeLightbox();
+});
+window.addEventListener('keydown', (e) => {
+  if (!lightbox?.classList.contains('is-open')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') showLightboxImage(lightboxIndex - 1);
+  if (e.key === 'ArrowRight') showLightboxImage(lightboxIndex + 1);
+});
