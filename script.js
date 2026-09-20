@@ -58,45 +58,18 @@ stepper?.querySelectorAll('.step').forEach((step) => {
   });
 });
 
-// 3D render / completed-home comparison slider — draggable via the white
-// handle/frame itself, and kept in sync with the range input underneath.
-const compareFrame = document.querySelector('.compare-frame');
+// 3D render / completed-home comparison slider — moved only via the small
+// yellow "Move" handle on the range control below the image.
 const compareRange = document.getElementById('compareRange');
 const compareAfter = document.querySelector('.compare-after');
-const compareHandle = document.getElementById('compareHandle');
+const compareRangeThumb = document.getElementById('compareRangeThumb');
 
 const setCompare = (value) => {
   const v = Math.max(0, Math.min(100, value));
   if (compareAfter) compareAfter.style.clipPath = `inset(0 0 0 ${v}%)`;
-  if (compareHandle) compareHandle.style.left = `${v}%`;
+  if (compareRangeThumb) compareRangeThumb.style.left = `${v}%`;
   if (compareRange) compareRange.value = v;
 };
-
-const compareValueFromEvent = (e) => {
-  const rect = compareFrame.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const x = (clientX - rect.left) / rect.width;
-  return Math.round(Math.max(0, Math.min(1, x)) * 100);
-};
-
-let draggingCompare = false;
-
-const onCompareDragMove = (e) => {
-  if (!draggingCompare) return;
-  setCompare(compareValueFromEvent(e));
-};
-const onCompareDragEnd = () => {
-  draggingCompare = false;
-  window.removeEventListener('pointermove', onCompareDragMove);
-  window.removeEventListener('pointerup', onCompareDragEnd);
-};
-
-compareFrame?.addEventListener('pointerdown', (e) => {
-  draggingCompare = true;
-  setCompare(compareValueFromEvent(e));
-  window.addEventListener('pointermove', onCompareDragMove);
-  window.addEventListener('pointerup', onCompareDragEnd);
-});
 
 compareRange?.addEventListener('input', (e) => setCompare(Number(e.target.value)));
 if (compareRange) setCompare(Number(compareRange.value));

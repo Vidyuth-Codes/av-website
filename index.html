@@ -85,13 +85,13 @@
             <div class="compare-frame">
               <img class="compare-img compare-before" src="3Ddemo4.jpeg" alt="3D architectural concept render of a modern home at dusk" />
               <img class="compare-img compare-after" src="demo7.jpeg" alt="Completed home elevation built by Konzept" />
-              <div class="compare-handle" id="compareHandle">
-                <span class="compare-handle-grip">&#8596;</span>
-              </div>
               <span class="compare-tag compare-tag-left">3D Concept Render</span>
               <span class="compare-tag compare-tag-right">Completed Project</span>
             </div>
-            <input type="range" class="compare-range" id="compareRange" min="0" max="100" value="50" aria-label="Drag to compare 3D render and completed home" />
+            <div class="compare-range-wrap">
+              <input type="range" class="compare-range" id="compareRange" min="0" max="100" value="50" aria-label="Drag to compare 3D render and completed home" />
+              <span class="compare-range-thumb" id="compareRangeThumb" aria-hidden="true">Move</span>
+            </div>
           </div>
           <p class="compare-note">Illustrative &mdash; the render and completed project shown are from different builds, used here to demonstrate the design-to-construction process.</p>
 
@@ -149,7 +149,7 @@
         <div class="reveal" data-reveal>
           <span class="label eyebrow">04 / Selected work</span>
           <div class="work-head">
-            <h2>Built to leave a <span class="mark">mark.</span></h2>
+            <h2>From concept to <span class="mark">completion.</span></h2>
           </div>
           <p class="swipe-hint">SWIPE TO EXPLORE <span>&#8592; &#8594;</span></p>
           <div class="work-carousel">
