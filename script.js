@@ -37,6 +37,8 @@ if ('IntersectionObserver' in window) {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
           io.unobserve(entry.target);
+          if (entry.target.closest('#why')) animateStatCount();
+          if (entry.target.closest('#vision')) runCompareSweep();
         }
       });
     },
@@ -73,6 +75,28 @@ const setCompare = (value) => {
 
 compareRange?.addEventListener('input', (e) => setCompare(Number(e.target.value)));
 if (compareRange) setCompare(Number(compareRange.value));
+
+// One-time "auto-hint" sweep: nudges the compare handle out and back the
+// first time the slider scrolls into view, so visitors see it's draggable.
+let compareSweepDone = false;
+const animateCompareRange = (from, to, duration, onDone) => {
+  const start = performance.now();
+  const frame = (now) => {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    setCompare(from + (to - from) * eased);
+    if (p < 1) requestAnimationFrame(frame);
+    else onDone && onDone();
+  };
+  requestAnimationFrame(frame);
+};
+const runCompareSweep = () => {
+  if (compareSweepDone || !compareRange) return;
+  compareSweepDone = true;
+  setTimeout(() => {
+    animateCompareRange(50, 65, 650, () => animateCompareRange(65, 50, 650));
+  }, 500);
+};
 
 // Selected work: desktop paging via arrow buttons (one card at a time), no
 // free-drag scrolling — the container itself stays non-scrollable on desktop
@@ -164,3 +188,79 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') showLightboxImage(lightboxIndex - 1);
   if (e.key === 'ArrowRight') showLightboxImage(lightboxIndex + 1);
 });
+
+// "Why Konzept" stat: count 0 → 20 the first time the section is visible.
+const statNum = document.querySelector('#why .stat-item:first-child .stat-num');
+let statCountDone = false;
+const animateStatCount = () => {
+  if (statCountDone || !statNum) return;
+  statCountDone = true;
+  const target = 20;
+  const duration = 1200;
+  const start = performance.now();
+  const frame = (now) => {
+    const p = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    statNum.textContent = `${Math.round(eased * target)}+`;
+    if (p < 1) requestAnimationFrame(frame);
+    else statNum.textContent = '20+';
+  };
+  requestAnimationFrame(frame);
+};
+
+// Scroll progress bar: thin accent line at the top that fills as you scroll.
+const scrollProgress = document.getElementById('scrollProgress');
+const updateScrollProgress = () => {
+  if (!scrollProgress) return;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+  scrollProgress.style.width = `${pct}%`;
+};
+window.addEventListener('scroll', updateScrollProgress, { passive: true });
+window.addEventListener('resize', updateScrollProgress);
+updateScrollProgress();
+
+// Hero photos: subtle cursor-tilt parallax (pointer devices only).
+const heroSection = document.querySelector('.hero');
+const heroPhotoImgs = document.querySelectorAll('.hero-photo img');
+if (heroSection && heroPhotoImgs.length && window.matchMedia('(hover: hover)').matches) {
+  heroPhotoImgs.forEach((img) => {
+    img.addEventListener(
+      'animationend',
+      () => {
+        img.style.animation = 'none';
+        img.style.opacity = '1';
+        img.style.transform = 'scale(1.06)';
+      },
+      { once: true }
+    );
+  });
+  heroSection.addEventListener('mousemove', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    heroPhotoImgs.forEach((img) => {
+      img.style.transform = `scale(1.06) translate(${(-x * 16).toFixed(1)}px, ${(-y * 16).toFixed(1)}px)`;
+    });
+  });
+  heroSection.addEventListener('mouseleave', () => {
+    heroPhotoImgs.forEach((img) => {
+      img.style.transform = 'scale(1.06)';
+    });
+  });
+}
+
+// Magnetic buttons: primary CTAs nudge toward the cursor, then snap back.
+if (window.matchMedia('(hover: hover)').matches) {
+  document.querySelectorAll('.btn-solid, .cta-pill').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      el.style.transform = `translate(${(x * 0.3).toFixed(1)}px, ${(y * 0.3).toFixed(1)}px)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+  });
+}
